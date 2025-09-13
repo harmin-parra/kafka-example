@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: openjdk:21
+      image: openjdk:21-bookworm
 
     services:
       kafka:
