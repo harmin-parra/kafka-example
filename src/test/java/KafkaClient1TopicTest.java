@@ -18,7 +18,7 @@ import java.util.Properties;
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class KafkaClient1TopicTest {
 
-    private static final String TOPIC = "quickstart";
+    private static final String TOPIC = System.getenv().getOrDefault("TOPIC", "quickstart");
     private static final String BOOTSTRAP_SERVERS =
             System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "localhost:9092");
 

@@ -18,8 +18,9 @@ import java.util.Properties;
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class KafkaClient2TopicsTest {
 
-    private static final String TOPIC1 = "topic1";
-    private static final String TOPIC2 = "topic2";
+    private static final String TOPIC1 = System.getenv().getOrDefault("TOPIC1", "topic1");
+    private static final String TOPIC2 = System.getenv().getOrDefault("TOPIC2", "topic2");
+    private static final String[] TOPICS = {TOPIC1, TOPIC2};
     private static final String BOOTSTRAP_SERVERS =
             System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "localhost:9092");
 
@@ -53,27 +54,17 @@ public class KafkaClient2TopicsTest {
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
-            System.out.println("Producing messages in topic1...");
-            for (int i = 1; i <= 5; i++) {
-                String key = "key-" + i;
-                String value = "Hello Kafka " + i;
-                ProducerRecord<String, String> record = new ProducerRecord<>(TOPIC1, key, value);
-                producer.send(record);
-                System.out.printf("Produced: key=%s, value=%s%n", key, value);
+            for(String topic: TOPICS) {
+                System.out.println("Producing messages in topic " + topic);
+                for (int i = 1; i <= 5; i++) {
+                    String key = "key-" + i;
+                    String value = "Message " + i + " for topic " + topic;
+                    ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);
+                    producer.send(record);
+                    System.out.printf("Produced: key=%s, value=%s%n", key, value);
+                }
+                producer.flush(); // ensure all messages are sent
             }
-            producer.flush(); // ensure all messages are sent
-        }
-
-        try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
-            System.out.println("Producing messages in topic2...");
-            for (int i = 1; i <= 5; i++) {
-                String key = "key-" + i;
-                String value = "Bye Kafka " + i;
-                ProducerRecord<String, String> record = new ProducerRecord<>(TOPIC2, key, value);
-                producer.send(record);
-                System.out.printf("Produced: key=%s, value=%s%n", key, value);
-            }
-            producer.flush(); // ensure all messages are sent
         }
     }
 
@@ -86,54 +77,30 @@ public class KafkaClient2TopicsTest {
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("auto.offset.reset", "earliest");
         props.put("enable.auto.commit", "false");
+        
+        for(String topic: TOPICS) {
+            try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
+                System.out.println("Consuming messages in topic " + topic);
+                consumer.subscribe(Collections.singletonList(topic));
+                ConsumerRecords<String, String> records = ConsumerRecords.empty();
 
-        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
-            consumer.subscribe(Collections.singletonList(TOPIC1));
+                // Poll loop to ensure messages are received
+                int retries = 10;
+                while (records.isEmpty() && retries-- > 0) {
+                    records = consumer.poll(Duration.ofSeconds(2));
+                }
 
-            System.out.println("Consuming messages in topic1...");
-            ConsumerRecords<String, String> records = ConsumerRecords.empty();
-
-            // Poll loop to ensure messages are received
-            int retries = 10;
-            while (records.isEmpty() && retries-- > 0) {
-                records = consumer.poll(Duration.ofSeconds(2));
-            }
-
-            for (ConsumerRecord<String, String> record : records) {
-                System.out.printf("Consumed: offset=%d, key=%s, value=%s%n",
+                for (ConsumerRecord<String, String> record : records) {
+                    System.out.printf("Consumed: offset=%d, key=%s, value=%s%n",
                         record.offset(), record.key(), record.value());
-            }
+                }
 
-            if (!records.isEmpty()) {
-                consumer.commitSync();
-                System.out.println("Offsets committed manually.");
-            } else {
-                System.out.println("No messages consumed in topic1.");
-            }
-        }
-
-        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
-            consumer.subscribe(Collections.singletonList(TOPIC2));
-
-            System.out.println("Consuming messages in topic2...");
-            ConsumerRecords<String, String> records = ConsumerRecords.empty();
-
-            // Poll loop to ensure messages are received
-            int retries = 10;
-            while (records.isEmpty() && retries-- > 0) {
-                records = consumer.poll(Duration.ofSeconds(2));
-            }
-
-            for (ConsumerRecord<String, String> record : records) {
-                System.out.printf("Consumed: offset=%d, key=%s, value=%s%n",
-                        record.offset(), record.key(), record.value());
-            }
-
-            if (!records.isEmpty()) {
-                consumer.commitSync();
-                System.out.println("Offsets committed manually.");
-            } else {
-                System.out.println("No messages consumed in topic2.");
+                if (!records.isEmpty()) {
+                    consumer.commitSync();
+                    System.out.println("Offsets committed manually.");
+                } else {
+                    System.out.println("No messages consumed in topic " + topic);
+                }
             }
         }
     }

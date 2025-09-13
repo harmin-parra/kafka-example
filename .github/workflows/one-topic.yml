@@ -69,6 +69,7 @@ jobs:
           ./gradlew test --tests="KafkaClient1TopicTest"
         env:
           BOOTSTRAP_SERVERS: kafka:9092
+          TOPIC: quickstart
 
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4
