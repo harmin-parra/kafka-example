@@ -52,6 +52,7 @@ public class KafkaClientTest {
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
+            System.out.println("Producing messages...");
             for (int i = 1; i <= 5; i++) {
                 String key = "key-" + i;
                 String value = "Hello Kafka " + i;
