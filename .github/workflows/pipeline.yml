@@ -52,32 +52,45 @@ jobs:
             sleep 2
           done
 
-      - name: Run Gradle tasks
+      - name: Build
         run: |
-          mkdir -p build/run-outputs
-          ./gradlew clean test run \
-            | tee build/run-outputs/gradle.log
+          ./gradlew build -x test
+
+      - name: Run
+        run: |
+          ./gradlew run
         env:
           BOOTSTRAP_SERVERS: kafka:9092
 
-      - name: Verify test reports
+      - name: Test
         run: |
-          if [ ! -d build/reports/tests/html ]; then
-            echo "HTML reports not found!" && exit 1
-          fi
-          if [ ! -d build/reports/tests/xml ]; then
-            echo "XML reports not found!" && exit 1
-          fi
-          echo "Reports exist"
+          ./gradlew test
+        env:
+          BOOTSTRAP_SERVERS: kafka:9092
 
-      - name: Deploy run outputs and test reports to GitHub Pages
+      - name: Upload test reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: |
+            build/reports/tests/html
+            build/reports/tests/xml
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: test-reports
+          path: ./reports
+
+      - name: Deploy reports to gh-pages
         uses: peaceiris/actions-gh-pages@v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: |
-            ./build/reports/tests/html
-            ./build/reports/tests/xml
-            ./build/run-outputs
+          publish_dir: ./reports
           publish_branch: gh-pages
-          commit_message: "Publish run outputs and test reports"
+          commit_message: "Publish test reports"
           keep_files: false
