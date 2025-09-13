@@ -43,7 +43,7 @@ jobs:
                 break
               fi
               echo "Kafka not ready yet..."
-              sleep 5
+              sleep 2
             done
 
       - name: Build
