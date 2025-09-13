@@ -1,4 +1,4 @@
-name: Kafka Example
+name: Kafka with 1 topic
 
 on:
   workflow_dispatch:
@@ -64,7 +64,7 @@ jobs:
 
       - name: Test
         run: |
-          ./gradlew test
+          ./gradlew test --tests="KafkaClient1TopicTest"
         env:
           BOOTSTRAP_SERVERS: kafka:9092
 

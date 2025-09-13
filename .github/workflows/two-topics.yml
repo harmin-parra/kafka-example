@@ -1,0 +1,115 @@
+name: Kafka with 2 topics
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    container:
+      image: openjdk:21-bookworm
+
+    services:
+      kafka:
+        image: bitnami/kafka:4.0.0
+        ports:
+          - 9092:9092
+          - 9093:9093
+        env:
+          KAFKA_CFG_NODE_ID: 1
+          KAFKA_CFG_PROCESS_ROLES: broker,controller
+          KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+          KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+          KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+          KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+          KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "false"
+        options: >-
+          --health-cmd "bash -c 'echo > /dev/tcp/localhost/9092'"
+          --health-interval 10s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      #- name: Install dependencies
+      #  run: |
+      #    apt-get update
+      #    apt-get install -y xxx
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for Kafka server
+        run: |
+          echo "Waiting for Kafka..."
+          for i in {1..10}; do
+            if docker inspect --format='{{json .State.Health.Status}}' $(docker ps -qf ancestor=bitnami/kafka:4.0.0) | grep -q healthy; then
+              echo "Kafka is healthy"
+              break
+            fi
+            sleep 5
+          done
+
+      - name: Create topics
+        run: |
+          KAFKA_CID=$(docker ps -qf ancestor=bitnami/kafka:4.0.0)
+          for topic in topic1 topic2; do
+            docker exec "$KAFKA_CID" /opt/bitnami/kafka/bin/kafka-topics.sh \
+              --create --bootstrap-server localhost:9092 \
+              --topic "$topic" --partitions 1 --replication-factor 1 || true
+          done
+
+      - name: Wait for topics to propagate
+        run: |
+          KAFKA_CID=$(docker ps -qf ancestor=bitnami/kafka:4.0.0)
+          for topic in topic1 topic2; do
+            echo "Waiting for $topic..."
+            for i in {1..10}; do
+              docker exec "$KAFKA_CID" /opt/bitnami/kafka/bin/kafka-topics.sh \
+                --bootstrap-server localhost:9092 --list | grep -q "$topic" && break
+              sleep 1
+            done
+          done
+          echo "All topics exist!"
+
+      - name: Build
+        run: |
+          ./gradlew build -x test
+
+      - name: Test
+        run: |
+          ./gradlew test --tests="KafkaClient2TopicsTest"
+        env:
+          BOOTSTRAP_SERVERS: kafka:9092
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: build/reports/tests/html
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Download test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: test-reports
+          path: ./reports
+
+      - name: Publish reports
+        uses: peaceiris/actions-gh-pages@v4.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./reports
+          publish_branch: gh-pages
+          commit_message: "Publish test reports"
+          keep_files: false
