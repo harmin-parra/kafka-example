@@ -40,8 +40,7 @@ jobs:
       - name: Install Kafka
         run: |
           curl -sSL https://dlcdn.apache.org/kafka/4.1.0/kafka_2.13-4.1.0.tgz | tar -xz
-          export PATH="$PWD/kafka_2.13-4.1.0/bin:$PATH"
-          kafka-topics.sh --version
+          echo "$PWD/kafka_2.13-4.1.0/bin" >> $GITHUB_PATH
 
       #- name: Install dependencies
       #  run: |
