@@ -24,6 +24,14 @@ public class KafkaClient2TopicsTest {
     private static final String BOOTSTRAP_SERVERS =
             System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "localhost:9092");
 
+    private static String[] splitString(String input) {
+        if (input == null || input.isEmpty()) {
+            return new String[0]; // return empty array for null or empty input
+        }
+        // Split by comma or any whitespace (space, tab, etc.)
+        return input.trim().split("\\s*,\\s*|\\s+");
+    }
+    
     @BeforeAll
     public static void waitKafkaServer() throws InterruptedException {
         Properties props = new Properties();
