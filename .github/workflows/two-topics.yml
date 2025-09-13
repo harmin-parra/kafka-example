@@ -34,16 +34,13 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       #- name: Install dependencies
       #  run: |
       #    apt-get update
       #    apt-get install -y xxx
-
-    steps:
-      - uses: actions/checkout@v4
 
       - name: Wait for Kafka server
         run: |

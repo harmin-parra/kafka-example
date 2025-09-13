@@ -30,7 +30,7 @@ jobs:
           KAFKA_CREATE_TOPICS: "quickstart:1:1"
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       #- name: Install dependencies
@@ -56,11 +56,11 @@ jobs:
         run: |
           ./gradlew build -x test
 
-      - name: Run
-        run: |
-          ./gradlew run
-        env:
-          BOOTSTRAP_SERVERS: kafka:9092
+      #- name: Run
+      #  run: |
+      #    ./gradlew run
+      #  env:
+      #    BOOTSTRAP_SERVERS: kafka:9092
 
       - name: Test
         run: |
