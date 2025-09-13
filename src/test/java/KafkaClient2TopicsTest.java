@@ -25,9 +25,8 @@ public class KafkaClient2TopicsTest {
             System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "localhost:9092");
 
     private static String[] splitString(String input) {
-        if (input == null || input.isEmpty()) {
+        if (input == null || input.isEmpty())
             return new String[0]; // return empty array for null or empty input
-        }
         // Split by comma or any whitespace (space, tab, etc.)
         return input.trim().split("\\s*,\\s*|\\s+");
     }
