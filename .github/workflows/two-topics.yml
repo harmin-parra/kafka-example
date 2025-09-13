@@ -34,7 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Wait for Kafka server
+      - name: Wait for Kafka
         run: |
           echo "Waiting for Kafka..."
           for i in {1..20}; do
@@ -46,7 +46,7 @@ jobs:
             sleep 2
           done
 
-      - name: Verify topics have propagated
+      - name: Wait for topics
         run: |
           echo "Verifying that topics exist..."
           for topic in topic1 topic2; do
