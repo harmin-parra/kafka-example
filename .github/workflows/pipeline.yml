@@ -64,3 +64,14 @@ jobs:
           ./gradlew test
         env:
           BOOTSTRAP_SERVERS: kafka:9092
+
+      - name: Deploy reports
+        uses: peaceiris/actions-gh-pages@v7
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: |
+            ./build/reports/tests/html
+            ./build/reports/tests/xml
+          publish_branch: gh-pages
+          commit_message: "Publish test HTML and XML reports"
+          clean: true
