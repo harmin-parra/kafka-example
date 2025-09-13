@@ -20,32 +20,19 @@ jobs:
           - 9092:9092
           - 9093:9093
         env:
+          KAFKA_ENABLE_KRAFT: yes
           KAFKA_CFG_NODE_ID: 1
           KAFKA_CFG_PROCESS_ROLES: broker,controller
-          KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
           KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
           KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
-          KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-          KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
-          KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "false"
-        options: >-
-          --health-cmd "bash -c 'echo > /dev/tcp/localhost/9092'"
-          --health-interval 10s
-          --health-retries 5
+          KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+          KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+          KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+          KAFKA_CREATE_TOPICS: "topic1:1:1,topic2:1:1"  # << auto-create topics
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install Kafka
-        run: |
-          curl -sSL https://dlcdn.apache.org/kafka/4.1.0/kafka_2.13-4.1.0.tgz | tar -xz
-          echo "$PWD/kafka_2.13-4.1.0/bin" >> $GITHUB_PATH
-
-      #- name: Install dependencies
-      #  run: |
-      #    apt-get update
-      #    apt-get install -y xxx
 
       - name: Wait for Kafka server
         run: |
@@ -59,22 +46,18 @@ jobs:
             sleep 2
           done
 
-      - name: Create topics
+      - name: Verify topics have propagated
         run: |
-          for topic in topic1 topic2; do
-            kafka-topics.sh --create \
-              --bootstrap-server kafka:9092 \
-              --topic "$topic" \
-              --partitions 1 \
-              --replication-factor 1 || true
-          done
-
-      - name: Wait for topics to propagate
-        run: |
+          echo "Verifying that topics exist..."
           for topic in topic1 topic2; do
             for i in {1..10}; do
-              kafka-topics.sh --bootstrap-server kafka:9092 --list | grep -q "$topic" && break
-              sleep 1
+              if docker exec $(docker ps -qf ancestor=bitnami/kafka:4.0.0) \
+                /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list | grep -q "$topic"; then
+                echo "Topic '$topic' exists"
+                break
+              fi
+              echo "Waiting for topic '$topic' to appear..."
+              sleep 2
             done
           done
 
