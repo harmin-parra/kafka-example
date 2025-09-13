@@ -45,21 +45,9 @@ jobs:
             echo "Waiting..."
             sleep 2
           done
-
-      - name: Wait for topics
-        run: |
-          echo "Verifying that topics exist..."
-          for topic in topic1 topic2; do
-            for i in {1..10}; do
-              if docker exec $(docker ps -qf ancestor=bitnami/kafka:4.0.0) \
-                /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list | grep -q "$topic"; then
-                echo "Topic '$topic' exists"
-                break
-              fi
-              echo "Waiting for topic '$topic' to appear..."
-              sleep 2
-            done
-          done
+          # Wait a few extra seconds for topics to propagate
+          echo "Waiting for topics to propagate..."
+          sleep 5
 
       - name: Build
         run: |
