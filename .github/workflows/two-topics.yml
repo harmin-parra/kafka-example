@@ -37,6 +37,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Kafka
+        run: |
+          curl -sSL https://downloads.apache.org/kafka/3.5.1/kafka_2.13-3.5.1.tgz | tar -xz
+          export PATH="$PWD/kafka_2.13-3.5.1/bin:$PATH"
+          kafka-topics.sh --version
+
+
       #- name: Install dependencies
       #  run: |
       #    apt-get update
@@ -55,25 +62,22 @@ jobs:
 
       - name: Create topics
         run: |
-          KAFKA_CID=$(docker ps -qf ancestor=bitnami/kafka:4.0.0)
           for topic in topic1 topic2; do
-            docker exec "$KAFKA_CID" /opt/bitnami/kafka/bin/kafka-topics.sh \
-              --create --bootstrap-server localhost:9092 \
-              --topic "$topic" --partitions 1 --replication-factor 1 || true
+            kafka-topics.sh --create \
+              --bootstrap-server kafka:9092 \
+              --topic "$topic" \
+              --partitions 1 \
+              --replication-factor 1 || true
           done
 
       - name: Wait for topics to propagate
         run: |
-          KAFKA_CID=$(docker ps -qf ancestor=bitnami/kafka:4.0.0)
           for topic in topic1 topic2; do
-            echo "Waiting for $topic..."
             for i in {1..10}; do
-              docker exec "$KAFKA_CID" /opt/bitnami/kafka/bin/kafka-topics.sh \
-                --bootstrap-server localhost:9092 --list | grep -q "$topic" && break
+              kafka-topics.sh --bootstrap-server kafka:9092 --list | grep -q "$topic" && break
               sleep 1
             done
           done
-          echo "All topics exist!"
 
       - name: Build
         run: |
