@@ -4,7 +4,8 @@ import java.util.concurrent.ExecutionException;
 
 public class KafkaTopicUtils {
 
-    private static final String BOOTSTRAP_SERVERS = "localhost:9092";
+    private static final String BOOTSTRAP_SERVERS =
+      System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "localhost:9092");
 
     public static void resetTopic(String topicName, int partitions, int replicationFactor) {
         KafkaTopicUtils.resetTopic(topicName, partitions, (short) replicationFactor);

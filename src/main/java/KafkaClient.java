@@ -11,7 +11,8 @@ import java.util.Properties;
 public class KafkaClient {
 
     private static final String TOPIC = "quickstart";
-    private static final String BOOTSTRAP_SERVERS = "localhost:9092";
+    private static final String BOOTSTRAP_SERVERS =
+      System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "localhost:9092");
 
     // Producer method
     public static void produceMessages() {
