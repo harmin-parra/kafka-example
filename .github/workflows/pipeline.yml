@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y netcat xargs
+          apt-get install -y xargs
 
       - name: Wait for Kafka server
         run: |
