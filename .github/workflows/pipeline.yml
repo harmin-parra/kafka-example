@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y xargs
+          apt-get install -y findutils
 
       - name: Wait for Kafka server
         run: |
