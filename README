@@ -1,0 +1,8 @@
+KAFKA_CLUSTER_ID="$(bin/kafka-storage.sh random-uuid)"
+bin/kafka-storage.sh format --standalone -t $KAFKA_CLUSTER_ID -c config/server.properties
+bin/kafka-storage.sh format --config config/server.properties --cluster-id $(bin/kafka-storage.sh random-uuid)
+bin/kafka-server-start.sh config/server.properties
+bin/kafka-configs.sh --bootstrap-server localhost:9092 --entity-type topics --entity-name quickstart --describe
+
+bin/kafka-console-producer.sh --topic quickstart --bootstrap-server localhost:9092
+bin/kafka-console-consumer.sh --topic quickstart --from-beginning --bootstrap-server localhost:9092
