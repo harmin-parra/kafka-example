@@ -41,9 +41,7 @@ jobs:
           for i in {1..30}; do
             # nc -z localhost 9092 && echo "Kafka is up!" && break
             # Try listing topics; if it works, Kafka is ready
-            if /opt/bitnami/kafka/bin/kafka-topics.sh \
-                --bootstrap-server localhost:9092 \
-                --list >/dev/null 2>&1; then
+            if /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1; then
               echo "Kafka is up!"
               break
             fi
@@ -58,3 +56,5 @@ jobs:
       - name: Run
         run: |
           ./gradlew run
+        env:
+          BOOTSTRAP_SERVERS: kafka:9092
