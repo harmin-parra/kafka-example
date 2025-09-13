@@ -18,7 +18,6 @@ jobs:
         image: bitnami/kafka:4.0.0
         ports:
           - 9092:9092
-          - 9093:9093
         env:
           KAFKA_ENABLE_KRAFT: yes
           KAFKA_CFG_NODE_ID: 1
@@ -47,7 +46,7 @@ jobs:
           done
           # Wait a few extra seconds for topics to propagate
           echo "Waiting for topics to propagate..."
-          sleep 5
+          sleep 10
 
       - name: Build
         run: |
