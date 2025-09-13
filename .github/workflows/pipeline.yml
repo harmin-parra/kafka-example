@@ -72,9 +72,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
-          path: |
-            build/reports/tests/html
-            build/reports/tests/xml
+          path: build/reports/tests/html
 
   publish:
     runs-on: ubuntu-latest
