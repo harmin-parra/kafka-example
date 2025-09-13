@@ -51,10 +51,16 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew build
+          ./gradlew build -x test
 
       - name: Run
         run: |
           ./gradlew run
+        env:
+          BOOTSTRAP_SERVERS: kafka:9092
+
+      - name: Test
+        run: |
+          ./gradlew test
         env:
           BOOTSTRAP_SERVERS: kafka:9092

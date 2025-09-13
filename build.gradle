@@ -17,7 +17,38 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    junitVersion = '5.10.0'
+}
+
 dependencies {
     implementation 'org.apache.kafka:kafka-clients:4.1.0'
     runtimeOnly 'org.slf4j:slf4j-simple:2.0.13'
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+}
+
+test {
+    useJUnitPlatform()
+    systemProperties System.getProperties()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat = "full"  // shows stack traces
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+    }
+
+    // HTML + XML reports
+    reports {
+        html.required = true
+        junitXml.required = true
+        html.outputLocation = layout.buildDirectory.dir("reports/tests/html")
+        junitXml.outputLocation = layout.buildDirectory.dir("reports/tests/xml")
+    }
+}
+
+tasks.register('cleanBuild') {
+    dependsOn 'clean', 'build'
 }
