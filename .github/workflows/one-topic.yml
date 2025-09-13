@@ -48,7 +48,7 @@ jobs:
               echo "Kafka is up!"
               break
             fi
-            echo "Kafka not ready yet..."
+            echo "Waiting..."
             sleep 2
           done
           # Give the topic some time to propagate
