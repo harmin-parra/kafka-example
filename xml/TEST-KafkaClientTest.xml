@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="KafkaClientTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2025-09-13T17:56:43.196Z" hostname="c2e27b3d8b72" time="3.771">
+  <properties/>
+  <testcase name="A_producer()" classname="KafkaClientTest" time="0.14"/>
+  <testcase name="B_consumer()" classname="KafkaClientTest" time="3.629"/>
+  <system-out><![CDATA[Kafka is ready!
+Produced: key=key-1, value=Hello Kafka 1
+Produced: key=key-2, value=Hello Kafka 2
+Produced: key=key-3, value=Hello Kafka 3
+Produced: key=key-4, value=Hello Kafka 4
+Produced: key=key-5, value=Hello Kafka 5
+Consuming messages...
+Consumed: offset=0, key=key-1, value=Hello Kafka 1
+Consumed: offset=1, key=key-2, value=Hello Kafka 2
+Consumed: offset=2, key=key-3, value=Hello Kafka 3
+Consumed: offset=3, key=key-4, value=Hello Kafka 4
+Consumed: offset=4, key=key-5, value=Hello Kafka 5
+Consumed: offset=5, key=key-1, value=Hello Kafka 1
+Consumed: offset=6, key=key-2, value=Hello Kafka 2
+Consumed: offset=7, key=key-3, value=Hello Kafka 3
+Consumed: offset=8, key=key-4, value=Hello Kafka 4
+Consumed: offset=9, key=key-5, value=Hello Kafka 5
+Offsets committed manually.
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
