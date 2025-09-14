@@ -50,11 +50,11 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew build -x test
+          ./gradlew build --no-daemon --stacktrace -x test
 
       - name: Test
         run: |
-          ./gradlew test --tests="KafkaClient2TopicsTest"
+          ./gradlew test --no-daemon --stacktrace --tests="KafkaClient2TopicsTest"
         env:
           BOOTSTRAP_SERVERS: kafka:9092
           TOPIC1: topic1
