@@ -1,0 +1,40 @@
+name: Cassandra schema setup
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cassandra tests:
+    runs-on: ubuntu-latest
+
+    services:
+      cassandra:
+        image: cassandra:4.1
+        ports:
+          - 9042:9042   # optional: expose CQL port to the host
+
+    steps:
+      - name: Cassandra startup
+        run: |
+          echo "Waiting for Cassandra to start..."
+          for i in {1..30}; do
+            if docker exec "${{ job.services.cassandra.id }}" nodetool status >/dev/null 2>&1; then
+              echo "Cassandra is up!"
+              break
+            fi
+            sleep 5
+          done
+
+      - name: Creation of keyspace and table
+        run: |
+          docker exec ${{ job.services.cassandra.id }} cqlsh -e "
+          CREATE KEYSPACE IF NOT EXISTS directory
+          WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 1};
+          USE directory;
+          CREATE TABLE IF NOT EXISTS user_profile (
+              id uuid PRIMARY KEY,
+              name text,
+              age int,
+              tags set<text>,
+              created_at timestamp
+          );"
