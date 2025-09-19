@@ -1,4 +1,4 @@
-name: Cassandra schema setup
+name: Cassandra tests
 
 on:
   workflow_dispatch:
