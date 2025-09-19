@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  cassandra tests:
+  cassandra:
     runs-on: ubuntu-latest
 
     services:
       cassandra:
-        image: cassandra:4.1
+        image: cassandra:5.0
         ports:
-          - 9042:9042   # optional: expose CQL port to the host
+          - 9042:9042
 
     steps:
       - name: Cassandra startup
