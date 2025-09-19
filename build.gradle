@@ -10,7 +10,7 @@ java {
 }
 
 application {
-    mainClass = 'KafkaClient'
+    mainClass = 'kafka.KafkaClient'
 }
 
 repositories {

@@ -1,3 +1,5 @@
+package kafka;
+
 import org.apache.kafka.clients.admin.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
