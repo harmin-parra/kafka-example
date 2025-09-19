@@ -17,7 +17,7 @@ jobs:
       - name: Cassandra startup
         run: |
           echo "Waiting for Cassandra to start..."
-          for i in {1..30}; do
+          for i in {1..60}; do
             if docker exec "${{ job.services.cassandra.id }}" nodetool status >/dev/null 2>&1; then
               echo "Cassandra is up!"
               break
