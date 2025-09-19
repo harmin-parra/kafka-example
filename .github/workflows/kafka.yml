@@ -1,0 +1,90 @@
+name: Kafka tests
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    container:
+      image: openjdk:21-bookworm
+
+    services:
+      kafka:
+        image: bitnami/kafka:4.0.0
+        ports:
+          - 9092:9092
+        env:
+          KAFKA_ENABLE_KRAFT: yes
+          KAFKA_CFG_NODE_ID: 1
+          KAFKA_CFG_PROCESS_ROLES: broker,controller
+          KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+          KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+          KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+          KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+          KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+          KAFKA_CREATE_TOPICS: "quickstart:1:1,topic1:1:1,topic2:1:1"  # << auto-create topics
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Kafka startup
+        run: |
+          echo "Waiting for Kafka..."
+          for i in {1..20}; do
+            if kafka-topics.sh --bootstrap-server kafka:9092 --list > /dev/null 2>&1; then
+              echo "Kafka is ready"
+              break
+            fi
+            echo "Waiting..."
+            sleep 2
+          done
+          # Wait a few extra seconds for topics to propagate
+          echo "Waiting for topics to propagate..."
+          sleep 10
+
+      - name: Build
+        run: |
+          ./gradlew build --no-daemon --stacktrace -x test
+
+      - name: Test
+        run: |
+          ./gradlew test --no-daemon --stacktrace --tests="kafka.*"
+        env:
+          BOOTSTRAP_SERVERS: kafka:9092
+          TOPIC: quickstart
+          TOPIC1: topic1
+          TOPIC2: topic2
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: build/reports/tests/html
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+
+    steps:
+      - name: Download test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: test-reports
+          path: ./reports
+
+      - name: Publish reports
+        uses: peaceiris/actions-gh-pages@v4.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./reports
+          publish_branch: gh-pages
+          commit_message: "Publish test reports"
+          keep_files: false
