@@ -16,12 +16,24 @@ jobs:
     steps:
       - name: Cassandra startup
         run: |
+          CID="${{ job.services.cassandra.id }}"
+          
           echo "Waiting for Cassandra to start..."
           for i in {1..60}; do
-            if docker exec "${{ job.services.cassandra.id }}" nodetool status >/dev/null 2>&1; then
+            if docker exec "$CID" nodetool status > /dev/null 2>&1; then
               echo "Cassandra is up!"
               break
             fi
+            sleep 5
+          done
+
+          echo "CQL probe"
+          for i in {1..40}; do
+            if docker exec "$CID" cqlsh -e "SHOW VERSION" >/dev/null 2>&1; then
+              echo "CQL service is ready!"
+              break
+            fi
+            echo "Still waiting for CQL"
             sleep 5
           done
 
