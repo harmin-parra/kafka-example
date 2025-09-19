@@ -27,7 +27,7 @@ jobs:
           KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
           KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
           KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-          KAFKA_CREATE_TOPICS: "quickstart:1:1,topic1:1:1,topic2:1:1"  # << auto-create topics
+          KAFKA_CREATE_TOPICS: "quickstart:1:1,topic1:1:1,topic2:1:1"
 
     steps:
       - name: Checkout
