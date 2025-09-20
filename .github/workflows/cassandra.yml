@@ -62,5 +62,5 @@ jobs:
         run: |
           ./gradlew test --no-daemon --stacktrace --tests="cassandra.*"
         env:
-          CASSANDRA_HOST: cassandra
+          CASSANDRA_HOST: localhost
           CASSANDRA_PORT: 9042
