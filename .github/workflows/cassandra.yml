@@ -21,6 +21,14 @@ jobs:
 
       - name: Cassandra startup
         run: |
+          for i in {1..60}; do
+            nc -z cassandra 9042 && echo "Cassandra is ready!" && break
+            echo "Waiting for Cassandra..."
+            sleep 5
+          done
+          sleep 20
+          exit
+          
           CID="${{ job.services.cassandra.id }}"
           
           echo "Waiting for Cassandra to start..."
