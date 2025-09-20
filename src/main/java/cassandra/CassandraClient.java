@@ -116,6 +116,9 @@ public class CassandraClient {
 
     // Main method
     public static void main(String[] args) {
+        CassandraUtils.waitForServer(CASSANDRA_HOST, CASSANDRA_PORT, Duration.ofMinutes(5));
+        CassandraUtils.waitForCql(CASSANDRA_HOST, CASSANDRA_PORT, "datacenter1");
+
         System.out.println("Creating schema");
         CassandraUtils.schemaLoader(CASSANDRA_HOST, CASSANDRA_PORT, "schema.cql");
 
