@@ -35,6 +35,13 @@ jobs:
 
       - name: Kafka startup
         run: |
+          for i in {1..30}; do
+            docker compose exec -T kafka \
+              kafka-topics.sh --bootstrap-server kafka:9092 --list > /dev/null 2>&1 && break
+            echo "Waiting for Kafka..."
+            sleep 2
+          done
+          sleep 10
           exit
           echo "Waiting for Kafka..."
           for i in {1..30}; do
