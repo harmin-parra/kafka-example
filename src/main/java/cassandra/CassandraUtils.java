@@ -10,7 +10,7 @@ import java.net.InetSocketAddress;
 
 public class CassandraUtils {
 
-    public void static schemaLoader(String host, int port, String file) {
+    public static void schemaLoader(String host, int port, String file) {
         String cql = Files.readString(Paths.get(file));
 
         // --- 2) Split statements on semicolon ---
