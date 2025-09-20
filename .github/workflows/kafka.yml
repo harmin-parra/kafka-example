@@ -35,7 +35,7 @@ jobs:
       - name: Kafka startup
         run: |
           for i in {1..30}; do
-            (echo > /dev/tcp/kafka/9092) >/dev/null 2>&1 && echo "Kafka is up!" && break
+            (echo > /dev/tcp/kafka/9092) > /dev/null 2>&1 && echo "Kafka is up!" && break
             echo "Waiting for Kafka..."
             sleep 2
           done
