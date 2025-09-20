@@ -31,9 +31,9 @@ public class CassandraTest {
     private static final int CASSANDRA_PORT =
       Integer.parseInt(System.getenv().getOrDefault("CASSANDRA_PORT", "9042"));
 
-    @BeforeAll
+    //@BeforeAll
     public static void waitCassandraServer() throws InterruptedException {
-
+        CassandraUtils.schemaLoader(CASSANDRA_HOST, CASSANDRA_HOST, "schema.cql");
     }
 
     @Test
