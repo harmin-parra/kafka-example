@@ -25,25 +25,8 @@ public class Kafka1TopicTest {
             System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "localhost:9092");
 
     @BeforeAll
-    public static void waitKafkaServer() throws InterruptedException {
-        Properties props = new Properties();
-        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-        props.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, "5000");
-        props.put(AdminClientConfig.RETRIES_CONFIG, "3");
-
-        int retries = 10;
-        while (retries-- > 0) {
-            try (AdminClient admin = AdminClient.create(props)) {
-                admin.listTopics().names().get(); // attempt to list topics
-                System.out.println("Kafka server is ready!");
-                return;
-            } catch (Exception e) {
-                System.out.println("Kafka server not ready yet, retrying...");
-                Thread.sleep(2000);
-            }
-        }
-
-        throw new RuntimeException("Kafka broker not available after waiting");
+    public static void setup() throws InterruptedException {
+        KafkaUtils.waitForServer();
     }
 
     @Test

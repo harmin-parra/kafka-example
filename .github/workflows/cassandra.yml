@@ -29,7 +29,7 @@ jobs:
           done
           
           # Wait for cqlsh
-          for i in {1..60}; do
+          for i in {1..300}; do
             if cqlsh cassandra 9042 -e "SHOW VERSION" > /dev/null 2>&1; then
               echo "Cassandra CQL is ready!"
               break
@@ -37,14 +37,6 @@ jobs:
             echo "Waiting for Cassandra CQL..."
             sleep 5
           done
-          exit
-          
-          for i in {1..60}; do
-            nc -z cassandra 9042 && echo "Cassandra is ready!" && break
-            echo "Waiting for Cassandra..."
-            sleep 5
-          done
-          sleep 20
           exit
           
           CID="${{ job.services.cassandra.id }}"

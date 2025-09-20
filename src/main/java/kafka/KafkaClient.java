@@ -107,7 +107,7 @@ public class KafkaClient {
     // Main method
     public static void main(String[] args) {
         System.out.println("Consume all messages");
-        KafkaTopicUtils.resetTopic("quickstart", 1, 1);
+        KafkaUtils.resetTopic("quickstart", 1, 1);
         System.out.println("Producing messages...");
         produceMessages();
         System.out.println("**********************************************");
@@ -117,7 +117,7 @@ public class KafkaClient {
         System.out.print("\n\n\n");
 
         System.out.println("Consume last message");
-        KafkaTopicUtils.resetTopic("quickstart", 1, 1);
+        KafkaUtils.resetTopic("quickstart", 1, 1);
         System.out.println("Producing messages...");
         produceMessages();
         System.out.println("**********************************************");

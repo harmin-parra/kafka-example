@@ -116,10 +116,11 @@ public class CassandraClient {
 
     // Main method
     public static void main(String[] args) {
+        System.out.println("Creating schema");
+        CassandraUtils.schemaLoader(CASSANDRA_HOST, CASSANDRA_PORT, "schema.cql");
+
         System.out.println("Inserting data");
         CassandraClient.insert();
-
-        System.out.print("\n\n\n");
 
         System.out.println("Reading data");
         CassandraClient.read();

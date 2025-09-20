@@ -4,13 +4,30 @@ import org.apache.kafka.clients.admin.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-public class KafkaTopicUtils {
+public class KafkaUtils {
 
     private static final String BOOTSTRAP_SERVERS =
       System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "localhost:9092");
 
-    public static void resetTopic(String topicName, int partitions, int replicationFactor) {
-        KafkaTopicUtils.resetTopic(topicName, partitions, (short) replicationFactor);
+    public static void waitForServer() throws InterruptedException {
+        Properties props = new Properties();
+        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        props.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, "5000");
+        props.put(AdminClientConfig.RETRIES_CONFIG, "3");
+
+        int retries = 10;
+        while (retries-- > 0) {
+            try (AdminClient admin = AdminClient.create(props)) {
+                admin.listTopics().names().get(); // attempt to list topics
+                System.out.println("Kafka server is ready!");
+                return;
+            } catch (Exception e) {
+                System.out.println("Kafka server not ready yet, retrying...");
+                Thread.sleep(2000);
+            }
+        }
+
+        throw new RuntimeException("Kafka broker not available after waiting");
     }
 
     public static void createTopic(String topicName, int partitions, short replicationFactor) {
@@ -31,6 +48,10 @@ public class KafkaTopicUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void resetTopic(String topicName, int partitions, int replicationFactor) {
+        resetTopic(topicName, partitions, (short) replicationFactor);
     }
 
     public static void resetTopic(String topicName, int partitions, short replicationFactor) {
@@ -56,7 +77,7 @@ public class KafkaTopicUtils {
             }
 
             // Create new topic
-            KafkaTopicUtils.createTopic(topicName, partitions, replicationFactor);
+            createTopic(topicName, partitions, replicationFactor);
 
         } catch (ExecutionException e) {
             System.err.println("Error while resetting topic: " + e.getCause().getMessage());
