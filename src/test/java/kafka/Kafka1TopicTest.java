@@ -24,7 +24,7 @@ public class Kafka1TopicTest {
     private static final String BOOTSTRAP_SERVERS =
             System.getenv().getOrDefault("BOOTSTRAP_SERVERS", "localhost:9092");
 
-    //@BeforeAll
+    @BeforeAll
     public static void waitKafkaServer() throws InterruptedException {
         Properties props = new Properties();
         props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);

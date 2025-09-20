@@ -33,7 +33,7 @@ public class Kafka2TopicsTest {
         return input.trim().split("\\s*,\\s*|\\s+");
     }
     
-    //@BeforeAll
+    @BeforeAll
     public static void waitKafkaServer() throws InterruptedException {
         Properties props = new Properties();
         props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
