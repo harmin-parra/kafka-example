@@ -50,3 +50,10 @@ jobs:
               tags set<text>,
               created_at timestamp
           );"
+
+      - name: Test
+        run: |
+          ./gradlew test --no-daemon --stacktrace --tests="cassandra.*"
+        env:
+          CASSANDRA_HOST: cassandra
+          CASSANDRA_PORT: 9042
