@@ -35,13 +35,14 @@ jobs:
       - name: Kafka startup
         run: |
           for i in {1..30}; do
-            nc -z kafka 9092 && echo "Kafka is up!" && break
+            (echo > /dev/tcp/kafka/9092) >/dev/null 2>&1 && echo "Kafka is up!" && break
             echo "Waiting for Kafka..."
             sleep 2
           done
           # Wait a few extra seconds for topics to propagate
           sleep 10
           exit
+
           echo "Waiting for Kafka..."
           for i in {1..30}; do
             if kafka-topics.sh --bootstrap-server kafka:9092 --list > /dev/null 2>&1; then
