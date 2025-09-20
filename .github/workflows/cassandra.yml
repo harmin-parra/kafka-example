@@ -5,6 +5,7 @@ on:
 
 jobs:
   test:
+
     runs-on: ubuntu-latest
     container: openjdk:21-bookworm
 
