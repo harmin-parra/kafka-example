@@ -21,6 +21,24 @@ jobs:
 
       - name: Cassandra startup
         run: |
+          # Wait for server
+          for i in {1..60}; do
+            (echo > /dev/tcp/cassandra/9042) > /dev/null 2>&1 && echo "Cassandra is ready!" && break
+            echo "Waiting for Cassandra server..."
+            sleep 5
+          done
+          
+          # Wait for cqlsh
+          for i in {1..60}; do
+            if cqlsh cassandra 9042 -e "SHOW VERSION" > /dev/null 2>&1; then
+              echo "Cassandra CQL is ready!"
+              break
+            fi
+            echo "Waiting for Cassandra CQL..."
+            sleep 5
+          done
+          exit
+          
           for i in {1..60}; do
             nc -z cassandra 9042 && echo "Cassandra is ready!" && break
             echo "Waiting for Cassandra..."
