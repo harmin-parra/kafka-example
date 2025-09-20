@@ -11,7 +11,12 @@ import java.net.InetSocketAddress;
 public class CassandraUtils {
 
     public static void schemaLoader(String host, int port, String file) {
-        String cql = Files.readString(Paths.get(file));
+
+        try {
+            String cql = Files.readString(Paths.get(file));
+        } catch (IOException e) {
+            throw new java.lang.RuntimeException("Error reading file: " + file);
+        }
 
         // --- 2) Split statements on semicolon ---
         String[] statements = cql.split("(?m);\\s*");
