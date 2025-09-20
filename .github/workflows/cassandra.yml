@@ -4,8 +4,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  cassandra:
+  test:
     runs-on: ubuntu-latest
+    container: openjdk:21-bookworm
 
     services:
       cassandra:
@@ -62,5 +63,5 @@ jobs:
         run: |
           ./gradlew test --no-daemon --stacktrace --tests="cassandra.*"
         env:
-          CASSANDRA_HOST: localhost
+          CASSANDRA_HOST: cassandra
           CASSANDRA_PORT: 9042
