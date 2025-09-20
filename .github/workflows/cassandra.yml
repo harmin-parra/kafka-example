@@ -51,6 +51,10 @@ jobs:
               created_at timestamp
           );"
 
+      - name: Build
+        run: |
+          ./gradlew build --no-daemon --stacktrace -x test
+
       - name: Test
         run: |
           ./gradlew test --no-daemon --stacktrace --tests="cassandra.*"
