@@ -23,7 +23,6 @@ jobs:
 
       - name: Cassandra startup
         run: |
-          exit
           # Wait for server
           for i in {1..60}; do
             (echo > /dev/tcp/cassandra/9042) > /dev/null 2>&1 && echo "Cassandra is ready!" && break
