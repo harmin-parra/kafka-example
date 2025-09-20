@@ -9,11 +9,11 @@ import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -116,7 +116,7 @@ public class CassandraClient {
     }
 
     // Main method
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         CassandraUtils.waitForServer(CASSANDRA_HOST, CASSANDRA_PORT, Duration.ofMinutes(5));
         CassandraUtils.waitForCql(CASSANDRA_HOST, CASSANDRA_PORT, "datacenter1");
 
