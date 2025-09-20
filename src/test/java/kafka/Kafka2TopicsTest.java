@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 @TestMethodOrder(MethodOrderer.MethodName.class)
-public class KafkaClient2TopicsTest {
+public class Kafka2TopicsTest {
 
     private static final String TOPIC1 = System.getenv().getOrDefault("TOPIC1", "topic1");
     private static final String TOPIC2 = System.getenv().getOrDefault("TOPIC2", "topic2");

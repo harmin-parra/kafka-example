@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 @TestMethodOrder(MethodOrderer.MethodName.class)
-public class KafkaClient1TopicTest {
+public class Kafka1TopicTest {
 
     private static final String TOPIC = System.getenv().getOrDefault("TOPIC", "quickstart");
     private static final String BOOTSTRAP_SERVERS =
