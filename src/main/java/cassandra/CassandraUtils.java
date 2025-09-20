@@ -12,8 +12,9 @@ public class CassandraUtils {
 
     public static void schemaLoader(String host, int port, String file) {
 
+        String cql = null;
         try {
-            String cql = Files.readString(Paths.get(file));
+            cql = Files.readString(Paths.get(file));
         } catch (IOException e) {
             throw new java.lang.RuntimeException("Error reading file: " + file);
         }
