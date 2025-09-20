@@ -8,10 +8,9 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
 
-    container:
-      image: openjdk:21-bookworm
+    runs-on: ubuntu-latest
+    container: openjdk:21-bookworm
 
     services:
       kafka:
