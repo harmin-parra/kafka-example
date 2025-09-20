@@ -33,10 +33,8 @@ public class CassandraTest {
 
     @BeforeAll
     public static void setup() throws InterruptedException {
-        createSchema();
-    }
-
-    public static void createSchema() throws InterruptedException {
+        CassandraUtils.waitForServer(CASSANDRA_HOST, CASSANDRA_PORT, Duration.ofMinutes(5));
+        CassandraUtils.waitForCql(CASSANDRA_HOST, CASSANDRA_PORT, "datacenter1");
         CassandraUtils.schemaLoader(CASSANDRA_HOST, CASSANDRA_PORT, "schema.cql");
     }
 

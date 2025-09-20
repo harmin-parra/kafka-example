@@ -65,19 +65,16 @@ public class CassandraUtils {
     public static void schemaLoader(String host, int port, String file) {
         // Read file content 
         String cql = null;
+        try (InputStream in = CassandraUtils.class.getClassLoader().getResourceAsStream(file)) {
+            cql = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading file: " + file, e);
+        }
+        /*
         try {
             cql = Files.readString(Paths.get("src", "test", "resources", file));
         } catch (IOException e) {
             throw new java.lang.RuntimeException("Error reading file: " + file);
-        }
-        /*
-        try (InputStream in = CassandraUtils.class.getClassLoader().getResourceAsStream(file)) {
-            if (in == null) {
-                throw new RuntimeException("File not found: " + file);
-            }
-            cql = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException("Error reading file: schema.cql", e);
         }
         */
 
